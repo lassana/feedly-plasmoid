@@ -1,6 +1,7 @@
 import QtQuick 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
+import org.kde.plasma.plasmoid 2.0
 
-PlasmaComponents.Label {
-    text: "Hello world in Plasma 5 ";
+Item {
+    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    Plasmoid.compactRepresentation: CompactRepresentation {}
 }
