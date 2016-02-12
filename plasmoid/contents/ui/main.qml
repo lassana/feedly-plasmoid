@@ -8,9 +8,10 @@ import org.kde.plasma.core 2.0 as PlasmaCore
 Item {
     id: main
     
-    property int updateInterval: 1//plasmoid.configuration.updateInterval
+    property bool vertical: false
+    property string accessToken: plasmoid.configuration.apiToken
+    property int updateInterval: plasmoid.configuration.updateInterval
     property int unreadsCount: 0
-    property bool hasUnreads: unreadsCount > 0
     
     onUnreadsCountChanged: updateTooltip()
     
@@ -31,16 +32,41 @@ Item {
         id: updateTimer
         interval: 1000 //updateInterval * 60 * 1000
         running: true
-        repeat: true
+        repeat: false
         onTriggered: {
-            unreadsCount += 1
+            //unreadsCount += 1
+            var url = 'https://cloud.feedly.com/v3/markers/counts'
+            var http = new XMLHttpRequest()
+            http.onreadystatechange = function() {
+                if (http.readyState == XMLHttpRequest.HEADERS_RECEIVED) {
+                    //console.log("Headers -->\n" + http.getAllResponseHeaders ())
+                    //console.log("Last modified -->\n" + http.getResponseHeader ("Last-Modified"))
+                } else if (http.readyState == XMLHttpRequest.DONE) {
+                    //console.log("Headers -->\n" + http.getAllResponseHeaders ())
+                    //console.log("Last modified -->" + http.getResponseHeader ("Last-Modified"))
+                    //console.log('responseText -->\n' + http.responseText)
+                    var responseObject = eval('new Object(' + http.responseText + ')')
+                    var newUnreadsCount = 0
+                    for (var i = 0; i < responseObject.unreadcounts.length; i++)
+                    {
+                        var nextId = responseObject.unreadcounts[i].id
+                        if (nextId.substring(0, 5) == 'feed/') {
+                            newUnreadsCount += responseObject.unreadcounts[i].count
+                        }
+                    }
+                    unreadsCount = newUnreadsCount
+                }
+            }
+            http.open('GET', url, true)
+            http.setRequestHeader('Authorization', accessToken)
+            http.send('')
         }
     }
-    
+
     function updateTooltip() {
         var toolTipSubText = ''
         toolTipSubText += '<font size="4">'
-        if (hasUnreads) {
+        if (unreadsCount > 0) {
             toolTipSubText += 'You have ' + unreadsCount + (unreadsCount == 1 ? ' unread entry.' : ' unreads entries.')
         } else {
             toolTipSubText += 'There are no new entries.' 
