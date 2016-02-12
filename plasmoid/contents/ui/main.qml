@@ -15,9 +15,9 @@ Item {
     
     onUnreadsCountChanged: updateTooltip()
     
-    //Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: CompactRepresentation {}
-    Plasmoid.fullRepresentation: FullRepresentation { }
+    //Plasmoid.fullRepresentation: FullRepresentation { }
     
     FontLoader {
         source: '../fonts/fontawesome-webfont-4.3.0.ttf'
@@ -26,6 +26,7 @@ Item {
     Component.onCompleted: {
         updateTooltip()
         Plasmoid.setAction('reload', 'Refresh', 'view-refresh')
+        updateUnreadCounts()
         updateTimer.start()
     }
     

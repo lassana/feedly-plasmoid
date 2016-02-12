@@ -5,7 +5,7 @@ import org.kde.plasma.configuration 2.0
 ConfigModel {
     ConfigCategory {
          name: 'General'
-         icon: 'preferences-system-windows'
+         icon: Qt.resolvedUrl('../images/feedly-logo.svg')
          source: 'config/ConfigGeneral.qml'
     }
 }

@@ -19,7 +19,7 @@ function getUnreadCounts(token, useHttps, callback) {
             var newUnreadsCount = 0
             //console.log('Headers -->\n' + http.getAllResponseHeaders ())
             //console.log('Last modified -->' + http.getResponseHeader ('Last-Modified'))
-            //console.log('Status -->' + http.status)
+            console.log('Status -->' + http.status)
             //console.log('responseText -->\n' + http.responseText)
             if (http.status == 200) {
                 var responseObject = eval('new Object(' + http.responseText + ')')
