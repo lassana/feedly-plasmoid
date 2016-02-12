@@ -29,7 +29,7 @@ Item {
     
     Timer {
         id: updateTimer
-        interval: updateInterval * 60 * 1000
+        interval: 1000 //updateInterval * 60 * 1000
         running: true
         repeat: true
         onTriggered: {
