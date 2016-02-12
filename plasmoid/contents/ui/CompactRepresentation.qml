@@ -7,6 +7,8 @@ import org.kde.plasma.plasmoid 2.0
 import '../code/FeedlyUtils.js' as FeedlyUtils
 
 Item {
+    id: compactRepresentation
+    
     property double itemWidth: parent === null ? 0 : vertical ? parent.width : parent.height
     property double itemHeight: itemWidth
     

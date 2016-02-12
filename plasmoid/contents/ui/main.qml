@@ -15,9 +15,9 @@ Item {
     
     onUnreadsCountChanged: updateTooltip()
     
-    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    //Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: CompactRepresentation {}
-    Plasmoid.fullRepresentation: CompactRepresentation { }
+    Plasmoid.fullRepresentation: FullRepresentation { }
     
     FontLoader {
         source: '../fonts/fontawesome-webfont-4.3.0.ttf'
