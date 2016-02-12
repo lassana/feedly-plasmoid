@@ -26,10 +26,6 @@ Item {
         font.pixelSize: fontPixelSize
         font.pointSize: -1
     }
-  
-    /*PlasmaCore.IconItem {
-        source: "feed-subscribe"
-    }*/
     
     MouseArea {
         anchors.fill: parent

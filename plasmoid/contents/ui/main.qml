@@ -3,12 +3,10 @@ import QtQuick.Layouts 1.2
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
 
-//http://api.kde.org/frameworks-api/frameworks5-apidocs/plasma-framework/html/IconsPage_8qml_source.html
-
 Item {
     id: main
     
-    property bool vertical: false
+    property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
     property string accessToken: plasmoid.configuration.apiToken
     property int updateInterval: plasmoid.configuration.updateInterval
     property int unreadsCount: 0
@@ -30,11 +28,10 @@ Item {
     
     Timer {
         id: updateTimer
-        interval: 1000 //updateInterval * 60 * 1000
+        interval: updateInterval * 60 * 1000
         running: true
-        repeat: false
+        repeat: true
         onTriggered: {
-            //unreadsCount += 1
             var url = 'https://cloud.feedly.com/v3/markers/counts'
             var http = new XMLHttpRequest()
             http.onreadystatechange = function() {
@@ -42,23 +39,28 @@ Item {
                     //console.log("Headers -->\n" + http.getAllResponseHeaders ())
                     //console.log("Last modified -->\n" + http.getResponseHeader ("Last-Modified"))
                 } else if (http.readyState == XMLHttpRequest.DONE) {
+                    var newUnreadsCount = 0
                     //console.log("Headers -->\n" + http.getAllResponseHeaders ())
                     //console.log("Last modified -->" + http.getResponseHeader ("Last-Modified"))
+                    //console.log("Status -->" + http.status)
                     //console.log('responseText -->\n' + http.responseText)
-                    var responseObject = eval('new Object(' + http.responseText + ')')
-                    var newUnreadsCount = 0
-                    for (var i = 0; i < responseObject.unreadcounts.length; i++)
-                    {
-                        var nextId = responseObject.unreadcounts[i].id
-                        if (nextId.substring(0, 5) == 'feed/') {
-                            newUnreadsCount += responseObject.unreadcounts[i].count
+                    if (http.status == 200) {
+                        var responseObject = eval('new Object(' + http.responseText + ')')
+                        for (var i = 0; i < responseObject.unreadcounts.length; i++)
+                        {
+                            var nextId = responseObject.unreadcounts[i].id
+                            if (nextId.substring(0, 5) == 'feed/') {
+                                newUnreadsCount += responseObject.unreadcounts[i].count
+                            }
                         }
                     }
+                    console.log('newUnreadsCount: ' + newUnreadsCount)
                     unreadsCount = newUnreadsCount
                 }
             }
             http.open('GET', url, true)
             http.setRequestHeader('Authorization', accessToken)
+            http.setRequestHeader('Authorization', tkn)
             http.send('')
         }
     }
@@ -67,13 +69,13 @@ Item {
         var toolTipSubText = ''
         toolTipSubText += '<font size="4">'
         if (unreadsCount > 0) {
-            toolTipSubText += 'You have ' + unreadsCount + (unreadsCount == 1 ? ' unread entry.' : ' unreads entries.')
+            toolTipSubText += 'You have ' + unreadsCount + (unreadsCount == 1 ? ' unread entry.' : ' unread entries.')
         } else {
             toolTipSubText += 'There are no new entries.' 
         }
         toolTipSubText += '</font>'
         toolTipSubText += '<br />'
-        toolTipSubText += '<i>Click on icon to open Feedly site in browser.</i>'
+        toolTipSubText += '<i>Click on icon to open Feedly in browser.</i>'
         Plasmoid.toolTipSubText = toolTipSubText       
     }
 }
