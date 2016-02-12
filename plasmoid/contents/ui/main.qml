@@ -2,13 +2,15 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.2
 import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core 2.0 as PlasmaCore
+import '../code/FeedlyUtils.js' as FeedlyUtils
 
 Item {
     id: main
     
-    property bool vertical: (plasmoid.formFactor == PlasmaCore.Types.Vertical)
-    property string accessToken: plasmoid.configuration.apiToken
-    property int updateInterval: plasmoid.configuration.updateInterval
+    property bool vertical: (Plasmoid.formFactor == PlasmaCore.Types.Vertical)
+    property bool useHttps: Plasmoid.configuration.useHttps
+    property string accessToken: Plasmoid.configuration.apiToken
+    property int updateInterval: Plasmoid.configuration.updateInterval
     property int unreadsCount: 0
     
     onUnreadsCountChanged: updateTooltip()
@@ -23,6 +25,7 @@ Item {
     
     Component.onCompleted: {
         updateTooltip()
+        Plasmoid.setAction('reload', 'Refresh', 'view-refresh')
         updateTimer.start()
     }
     
@@ -31,40 +34,19 @@ Item {
         interval: updateInterval * 60 * 1000
         running: true
         repeat: true
-        onTriggered: {
-            var url = 'https://cloud.feedly.com/v3/markers/counts'
-            var http = new XMLHttpRequest()
-            http.onreadystatechange = function() {
-                if (http.readyState == XMLHttpRequest.HEADERS_RECEIVED) {
-                    //console.log("Headers -->\n" + http.getAllResponseHeaders ())
-                    //console.log("Last modified -->\n" + http.getResponseHeader ("Last-Modified"))
-                } else if (http.readyState == XMLHttpRequest.DONE) {
-                    var newUnreadsCount = 0
-                    //console.log("Headers -->\n" + http.getAllResponseHeaders ())
-                    //console.log("Last modified -->" + http.getResponseHeader ("Last-Modified"))
-                    //console.log("Status -->" + http.status)
-                    //console.log('responseText -->\n' + http.responseText)
-                    if (http.status == 200) {
-                        var responseObject = eval('new Object(' + http.responseText + ')')
-                        for (var i = 0; i < responseObject.unreadcounts.length; i++)
-                        {
-                            var nextId = responseObject.unreadcounts[i].id
-                            if (nextId.substring(0, 5) == 'feed/') {
-                                newUnreadsCount += responseObject.unreadcounts[i].count
-                            }
-                        }
-                    }
-                    console.log('newUnreadsCount: ' + newUnreadsCount)
-                    unreadsCount = newUnreadsCount
-                }
-            }
-            http.open('GET', url, true)
-            http.setRequestHeader('Authorization', accessToken)
-            http.setRequestHeader('Authorization', tkn)
-            http.send('')
-        }
+        onTriggered: updateUnreadCounts()
     }
 
+    function action_reload() {
+        updateUnreadCounts()
+    }
+    
+    function updateUnreadCounts() {
+        FeedlyUtils.getUnreadCounts(accessToken, useHttps, function(newUnreadsCount) {
+            unreadsCount = newUnreadsCount
+        })
+    }
+    
     function updateTooltip() {
         var toolTipSubText = ''
         toolTipSubText += '<font size="4">'
@@ -75,7 +57,7 @@ Item {
         }
         toolTipSubText += '</font>'
         toolTipSubText += '<br />'
-        toolTipSubText += '<i>Click on icon to open Feedly in browser.</i>'
+        toolTipSubText += '<i>Use middle button click to open Feedly in browser.</i>'
         Plasmoid.toolTipSubText = toolTipSubText       
     }
 }

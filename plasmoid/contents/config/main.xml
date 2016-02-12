@@ -11,5 +11,8 @@
     <entry name="updateInterval" type="Int">
         <default>30</default>
     </entry>
+    <entry name="useHttps" type="Bool">
+        <default>true</default>
+    </entry>
   </group>
 </kcfg>

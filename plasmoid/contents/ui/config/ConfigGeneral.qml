@@ -7,6 +7,7 @@ Item {
     
     property alias cfg_apiToken: accessTokenTextField.text
     property alias cfg_updateInterval: updateIntervalSpinBox.value
+    property alias cfg_useHttps: httpsCheckbox.checked
 
     GridLayout {
         rows: 2
@@ -29,7 +30,7 @@ Item {
         }
         
         Label {
-            text: "Developer token:"
+            text: 'Developer token:'
             Layout.row: 1
             Layout.column: 0
         }
@@ -48,8 +49,15 @@ Item {
             Layout.row: 1
             Layout.column: 2
             onClicked: {
-                
+                Qt.openUrlExternally('https://feedly.com/v3/auth/dev')
             }
+        }
+        
+        CheckBox {
+            id: httpsCheckbox
+            text: 'Use secure connection'
+            Layout.row: 2
+            Layout.column: 0
         }
     } 
 }
