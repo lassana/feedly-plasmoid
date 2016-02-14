@@ -15,9 +15,9 @@ Item {
     
     onUnreadsCountChanged: updateTooltip()
     
-    Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
+    //Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: CompactRepresentation {}
-    //Plasmoid.fullRepresentation: FullRepresentation { }
+    Plasmoid.fullRepresentation: FullRepresentation { }
     
     FontLoader {
         source: '../fonts/fontawesome-webfont-4.3.0.ttf'
@@ -43,7 +43,8 @@ Item {
     }
     
     function updateUnreadCounts() {
-        FeedlyUtils.getUnreadCounts(accessToken, useHttps, function(newUnreadsCount) {
+        var tkn = accessToken
+        FeedlyUtils.getUnreadCounts(tkn, useHttps, function(newUnreadsCount) {
             unreadsCount = newUnreadsCount
         })
     }

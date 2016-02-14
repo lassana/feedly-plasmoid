@@ -22,19 +22,6 @@ Item {
     property double iconWidth: itemWidth * 0.72
     property double iconHeight: itemHeight * 0.72
     
-    /*
-    PlasmaComponents.Label {
-        id: feedIconLabel
-        anchors.centerIn: parent
-        text: '\uf09e'
-        color: unreadsCount > 0 ? theme.textColor // '#2bb24c'
-                                : (textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF'))
-        font.family: 'FontAwesome'
-        font.pixelSize: fontPixelSize
-        font.pointSize: -1
-    }
-    */
-    
     Image {
         id: feedIconImage
         
