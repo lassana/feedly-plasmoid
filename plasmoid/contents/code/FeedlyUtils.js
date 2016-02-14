@@ -8,33 +8,127 @@ function feedlySiteUrl(useHttps) {
      return protocol(useHttps) + 'feedly.com/'
 }
 
-function getUnreadCounts(token, useHttps, callback) {
-    var url = protocol(useHttps) + 'cloud.feedly.com/v3/markers/counts'
+function feedlyBaseApiUrl(useHttps) {
+    return protocol(useHttps) + 'sandbox.feedly.com/'
+}
+
+function feedlyRedirectUrl() {
+    return 'http://localhost'
+}
+
+function getHtmlAuth(useHttps, callback) {
+    var url = feedlyBaseApiUrl(useHttps)
+            + '/v3/auth/auth' 
+            + '?client_id=' + 'sandbox'
+            + '&redirect_uri=' + feedlyRedirectUrl()
+            + '&response_type=' + 'code'
+            + '&scope=' + 'https://cloud.feedly.com/subscriptions'
+            + '' 
     var http = new XMLHttpRequest()
+    http.open('GET', url, true)
     http.onreadystatechange = function() {
-        if (http.readyState == XMLHttpRequest.HEADERS_RECEIVED) {
+        if (http.readyState == XMLHttpRequest.DONE) {
             //console.log('Headers -->\n' + http.getAllResponseHeaders ())
             //console.log('Last modified -->\n' + http.getResponseHeader ('Last-Modified'))
-        } else if (http.readyState == XMLHttpRequest.DONE) {
-            var newUnreadsCount = 0
-            //console.log('Headers -->\n' + http.getAllResponseHeaders ())
-            //console.log('Last modified -->' + http.getResponseHeader ('Last-Modified'))
-            console.log('Status -->' + http.status)
+            //console.log('Status -->\n' + http.status)
+            //console.log('responseText -->\n' + http.responseText)
+            if (http.status == 200) {
+                callback(http.responseText)
+            }
+        }
+    }
+    http.send(null)
+}
+
+function getTokens(code, useHttps, callback) {
+    var url = feedlyBaseApiUrl(useHttps)
+                + '/v3/auth/token'
+                + '?code=' + code
+                + '&client_id=' + 'sandbox'
+                + '&client_secret=' + 'JSSBD6FZT72058P51XEG'
+                + '&redirect_uri=' + feedlyRedirectUrl()
+                + '&grant_type=' + 'authorization_code'
+    var http = new XMLHttpRequest()
+    http.onreadystatechange = function() {
+        if (http.readyState == XMLHttpRequest.DONE) {
+            //console.log('Status -->\n' + http.status)
+            //console.log('responseText -->\n' + http.responseText)
+            if (http.status == 200) {
+                var responseObject = eval('new Object(' + http.responseText + ')')
+                callback(responseObject.access_token, responseObject.refresh_token, responseObject.expires_in)
+            }
+            
+        }
+    }
+    http.open('POST', url, true)
+    http.send('')
+}
+
+function getMostPopular(token, useHttps, streamId, callback) {
+    var mostPopular = null
+    var url = protocol(useHttps) + 'sandbox.feedly.com/v3/mixes/contents?streamId=' + streamId + '&unreadOnly=true&count=20'
+    var http = new XMLHttpRequest()
+    http.onreadystatechange = function() {
+        if (http.readyState == XMLHttpRequest.DONE) {
+            if (http.status == 200) {
+                //console.log('responseText -->\n' + http.responseText)
+                var responseObject = eval('new Object(' + http.responseText + ')')
+                for (var i=0, len=responseObject.items.length; i<len; i++) {
+                    if (!responseObject.items[i].unread) {
+                        continue
+                    }
+                    if (mostPopular == null || responseObject.items[i].engagement > mostPopular.engagement) {
+                        mostPopular = {
+                            engagement: responseObject.items[i].engagement,
+                            title: responseObject.items[i].title,
+                            url: responseObject.items[i].originId,
+                            image: responseObject.items[i].thumbnail == null ? '' : responseObject.items[i].thumbnail[0].url,
+                            from: responseObject.items[i].origin.title,
+                            date: responseObject.items[i].published
+                        }
+                    }
+                }
+                callback(mostPopular)
+            }
+        }
+    }
+    http.open('GET', url, true)
+    http.setRequestHeader('Authorization', token)
+    http.send(null)
+}
+
+function getUnreadCounts(token, useHttps, callback) {
+    var newUnreadsCount = 0
+    var mainStreamId = ''
+    var url = protocol(useHttps) + 'sandbox.feedly.com/v3/markers/counts'
+    var http = new XMLHttpRequest()
+    var listener = function() {
+        if (http.readyState == XMLHttpRequest.DONE) {
+            //console.log('Status -->\n' + http.status)
             //console.log('responseText -->\n' + http.responseText)
             if (http.status == 200) {
                 var responseObject = eval('new Object(' + http.responseText + ')')
                 for (var i = 0; i < responseObject.unreadcounts.length; i++)
                 {
                     var nextId = responseObject.unreadcounts[i].id
-                    if (nextId.substring(0, 5) == 'feed/') {
+                    var nextIdType = nextId.substring(0, 5)
+                    if (nextIdType == 'feed/') {
                         newUnreadsCount += responseObject.unreadcounts[i].count
+                    } else if(nextIdType == 'user/' && nextId.indexOf('global.all') > -1) {
+                        mainStreamId = nextId
                     }
                 }
+                if (mainStreamId != '') {
+                    getMostPopular(token, useHttps, mainStreamId, function(mostPopular) {
+                        callback(newUnreadsCount, mostPopular)
+                    })
+                } else {
+                    callback(newUnreadsCount, null)
+                }
             }
-            console.log('newUnreadsCount: ' + newUnreadsCount)
-            callback(newUnreadsCount)
         }
     }
+    http.onreadystatechange = listener
     http.open('GET', url, true)
     http.setRequestHeader('Authorization', token)
     http.send('')

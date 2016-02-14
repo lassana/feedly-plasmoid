@@ -9,9 +9,16 @@ Item {
     
     property bool vertical: (Plasmoid.formFactor == PlasmaCore.Types.Vertical)
     property bool useHttps: Plasmoid.configuration.useHttps
-    property string accessToken: Plasmoid.configuration.apiToken
+    property string accessToken: Plasmoid.configuration.accessToken
     property int updateInterval: Plasmoid.configuration.updateInterval
     property int unreadsCount: 0
+    
+    property string mostPopularEngagement
+    property string mostPopularTitle
+    property string mostPopularUrl
+    property string mostPopularImage
+    property string mostPopularFrom
+    property string mostPopularDate
     
     onUnreadsCountChanged: updateTooltip()
     
@@ -44,8 +51,14 @@ Item {
     
     function updateUnreadCounts() {
         var tkn = accessToken
-        FeedlyUtils.getUnreadCounts(tkn, useHttps, function(newUnreadsCount) {
+        FeedlyUtils.getUnreadCounts(tkn, useHttps, function(newUnreadsCount, mostPopular) {
             unreadsCount = newUnreadsCount
+            mostPopularEngagement = mostPopular.engagement
+            mostPopularTitle = mostPopular.title
+            mostPopularUrl = mostPopular.url
+            mostPopularImage = mostPopular.image
+            mostPopularFrom = mostPopular.from
+            mostPopularDate = mostPopular.date
         })
     }
     
