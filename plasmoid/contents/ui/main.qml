@@ -25,6 +25,9 @@ Item {
     //Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: CompactRepresentation {}
     Plasmoid.fullRepresentation: FullRepresentation { }
+    //Plasmoid.switchWidth: units.gridUnit * 8
+    //Plasmoid.switchHeight: units.gridUnit * 8
+    Plasmoid.title: 'Feedly Plasmoid'
     
     FontLoader {
         source: '../fonts/fontawesome-webfont-4.3.0.ttf'
@@ -33,6 +36,7 @@ Item {
     Component.onCompleted: {
         updateTooltip()
         Plasmoid.setAction('reload', 'Refresh', 'view-refresh')
+        Plasmoid.setAction('openFeedlyWebsite', 'Open Feedly', 'tag-places')
         updateUnreadCounts()
         updateTimer.start()
     }
@@ -63,16 +67,24 @@ Item {
     }
     
     function updateTooltip() {
+        var useHtml = false
         var toolTipSubText = ''
-        toolTipSubText += '<font size="4">'
+        if (useHtml) toolTipSubText += '<font size="4">'
         if (unreadsCount > 0) {
             toolTipSubText += 'You have ' + unreadsCount + (unreadsCount == 1 ? ' unread entry.' : ' unread entries.')
         } else {
             toolTipSubText += 'There are no new entries.' 
         }
-        toolTipSubText += '</font>'
-        toolTipSubText += '<br />'
-        toolTipSubText += '<i>Use middle button click to open Feedly in browser.</i>'
+        //toolTipSubText += '</font>'
+        if (useHtml) toolTipSubText += '<br/>'
+        else toolTipSubText += '\n'
+        if (useHtml) toolTipSubText += '<i>'
+        toolTipSubText += 'Use middle button click to open Feedly in browser.'
+        if (useHtml) toolTipSubText += '</i>'
         Plasmoid.toolTipSubText = toolTipSubText       
+    }
+    
+    function openFeedlyWebsite() {
+        Qt.openUrlExternally(FeedlyUtils.feedlySiteUrl(useHttps))
     }
 }

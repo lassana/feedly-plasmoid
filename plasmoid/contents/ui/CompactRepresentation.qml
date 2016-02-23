@@ -10,7 +10,7 @@ import '../code/FeedlyUtils.js' as FeedlyUtils
 Item {
     id: compactRepresentation
     
-    property double itemWidth: parent === null ? 0 : vertical ? parent.width : parent.height
+    property double itemWidth: Math.min(parent.width, parent.height)
     property double itemHeight: itemWidth
     
     Layout.preferredWidth: itemWidth
@@ -30,20 +30,31 @@ Item {
         
         height: iconHeight
         width: iconWidth
-    }
     
-    ColorOverlay {
-        anchors.fill: feedIconImage
-        source: feedIconImage
-        color: unreadsCount > 0 ? 'transparent' //'#2bb24c'
-                                : (textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF'))
-    }
+        ColorOverlay {
+            anchors.fill: parent
+            source: feedIconImage
+            color: unreadsCount > 0 ? 'transparent' //'#2bb24c'
+                                    : (textColorLight ? Qt.tint(theme.textColor, '#80000000') : Qt.tint(theme.textColor, '#80FFFFFF'))
+        }
     
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.MiddleButton
-        onClicked: {
-            Qt.openUrlExternally(FeedlyUtils.feedlySiteUrl(useHttps))
+        MouseArea {
+            anchors.fill: parent
+            property bool wasExpanded: false
+        
+            acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+            onPressed: {
+                if (mouse.button == Qt.LeftButton) {
+                    wasExpanded = plasmoid.expanded;
+                } else if (mouse.button == Qt.MiddleButton) {
+                    openFeedlyWebsite()
+                }
+            }
+            onClicked: {
+                if (mouse.button == Qt.LeftButton) {
+                    plasmoid.expanded = !wasExpanded;
+                }
+            }
         }
     }
 }
