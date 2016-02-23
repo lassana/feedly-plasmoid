@@ -66,23 +66,28 @@ function getTokens(code, useHttps, callback) {
 
 function getMostPopular(token, useHttps, streamId, callback) {
     var mostPopular = null
-    var url = protocol(useHttps) + 'sandbox.feedly.com/v3/mixes/contents?streamId=' + streamId + '&unreadOnly=true&count=20'
+    var url = protocol(useHttps) + 'sandbox.feedly.com/v3/mixes/contents?streamId=' + streamId + '&unreadOnly=true&count=' + 5
     var http = new XMLHttpRequest()
     http.onreadystatechange = function() {
         if (http.readyState == XMLHttpRequest.DONE) {
             if (http.status == 200) {
                 //console.log('responseText -->\n' + http.responseText)
-                var responseObject = eval('new Object(' + http.responseText + ')')
+                var responseObject = JSON.parse(http.responseText)
                 for (var i=0, len=responseObject.items.length; i<len; i++) {
                     if (!responseObject.items[i].unread) {
                         continue
                     }
-                    if (mostPopular == null || responseObject.items[i].engagement > mostPopular.engagement) {
+                    if (mostPopular == null || mostPopular.image == null || responseObject.items[i].engagement > mostPopular.engagement) {
+                        var thumbnail = responseObject.items[i].thumbnail != null 
+                                        ? responseObject.items[i].thumbnail[0].url 
+                                        : (responseObject.items[i].thumbnail != null && responseObject.items[i].thumbnail[0] != null)
+                                            ? responseObject.items[i].thumbnail[0]
+                                            : null
                         mostPopular = {
-                            engagement: responseObject.items[i].engagement,
+                            engagement: responseObject.items[i].engagement == null ? 0 : responseObject.items[i].engagement,
                             title: responseObject.items[i].title,
                             url: responseObject.items[i].originId,
-                            image: responseObject.items[i].thumbnail == null ? '' : responseObject.items[i].thumbnail[0].url,
+                            image: thumbnail,
                             from: responseObject.items[i].origin.title,
                             date: responseObject.items[i].published
                         }

@@ -6,7 +6,6 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.core 2.0 as PlasmaCore
 import org.kde.plasma.plasmoid 2.0
 import '../code/FeedlyUtils.js' as FeedlyUtils
-import '../code/DateUtils.js' as DateUtils
 
 Item {
     id: fullRepresentation
