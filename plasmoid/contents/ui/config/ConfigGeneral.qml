@@ -31,23 +31,32 @@ Item {
                 Layout.column: 1
             }        
             Label {
-                text: 'API token:'
+                text: 'API token: (' 
+                        + (plasmoid.configuration.accessToken == ''
+                            ? 'no one' 
+                            : (plasmoid.configuration.accessToken.substring(0,5) + '...'))
+                        + ')'
                 Layout.row: 1
                 Layout.column: 0
             }
             Button {
                 id: loginButton
-                text: 'Get new one'
+                text: plasmoid.configuration.accessToken == '' ? 'Get new one' : 'Remove'
                 iconName: 'feed-subscribe'
                 Layout.row: 1
                 Layout.column: 1
                 onClicked: {
-                    //Qt.openUrlExternally('https://feedly.com/v3/auth/dev')
-                    loginButton.enabled = false
-                    webView.visible = true
-                    FeedlyUtils.getHtmlAuth(cfg_useHttps, function(html) {
-                        webView.loadHtml(html, FeedlyUtils.feedlyBaseApiUrl(cfg_useHttps), FeedlyUtils.feedlyRedirectUrl())
-                    })
+                    if (plasmoid.configuration.accessToken == '') {
+                        loginButton.enabled = false
+                        webView.visible = true
+                        FeedlyUtils.getHtmlAuth(cfg_useHttps, function(html) {
+                            webView.loadHtml(html, FeedlyUtils.feedlyBaseApiUrl(cfg_useHttps), FeedlyUtils.feedlyRedirectUrl())
+                        })
+                    } else {
+                        plasmoid.configuration.accessToken = ''
+                        plasmoid.configuration.refreshToken = ''
+                        plasmoid.configuration.tokenExpires = ''
+                    }
                 }
             }        
             CheckBox {
