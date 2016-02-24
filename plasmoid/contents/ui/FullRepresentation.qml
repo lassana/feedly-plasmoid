@@ -14,17 +14,17 @@ Item {
     property double representationHeight: 300 * 0.75
     property double titleHeight: 50
     property bool textColorLight: ((theme.textColor.r + theme.textColor.g + theme.textColor.b) / 3) > 0.5
-    
+
     Layout.minimumWidth: representationWidth
     Layout.preferredWidth: representationWidth
     Layout.minimumHeight: representationHeight
     Layout.preferredHeight: representationHeight
-    
+
     RowLayout {
         id: unreadsLayout
         anchors.left: parent.left
         anchors.top: parent.top
-        
+
         Image {
             id: feedIconImage
             source: '../images/feedly-logo.svg'
@@ -66,29 +66,36 @@ Item {
         color: theme.textColor
         font.family: 'FontAwesome'
         verticalAlignment: Text.AlignTop
+
         MouseArea {
             cursorShape: Qt.PointingHandCursor
-            anchors.fill: githubLabel
+            anchors.fill: parent
             hoverEnabled: true
             onClicked: {
-                Qt.openUrlExternally('https://github.com/lassana/feedly-plasmoid')
+                Qt.openUrlExternally(projectUrl)
             }
-            onEntered: {
-                githubLabel.color = '#467cc1'
-            }
-            onExited: {
-                githubLabel.color = theme.textColor
+        }
+
+        PlasmaCore.ToolTipArea {
+            anchors.fill: parent
+            mainItem: RowLayout {
+                Label {
+                    text: '\uf09b'
+                    font.family: 'FontAwesome'
+                }
+                Label {
+                    text: 'Open ' + projectUrl + ' in browser.'
+                }
             }
         }
     }
-    
+
     Image {
         id: mainArticleImage
         anchors.top: unreadsLayout.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        //source: 'http://f.fastcompany.net/multisite_files/fastcompany/imagecache/620x350/poster/2016/02/3056628-poster-p-2-how-scientists-rediscovered-graffiti-scratched-by-astronauts-inside-apollo-11.jpg'
         source: mostPopularImage
         fillMode: Image.PreserveAspectCrop
     }
@@ -129,7 +136,6 @@ Item {
 
         Label {
             id: mainLayoutLabel
-            //text: 'Scientists Rediscover Astronaut Graffiti Scratched Inside Apollo 11'
             text: mostPopularTitle
             color: 'white'
             elide: Text.ElideRight
@@ -156,13 +162,11 @@ Item {
             anchors.left: mainIconFires.right
             anchors.top: parent.top
             anchors.bottom: parent.verticalCenter
-            //text: '5K'
             text: mostPopularEngagement
             color: '#ff960b'
         }
         
         Label {
-            //text: '<b>Fubiz</b> 5 days ago'
             text: '<b>'+ mostPopularFrom + '</b> ' + dateToFuzzyDate(mostPopularDate)
             color: 'white'
             elide: Text.ElideRight

@@ -13,6 +13,8 @@ Item {
     property int updateInterval: Plasmoid.configuration.updateInterval
     property int unreadsCount: 0
     
+    property string projectUrl: 'https://github.com/lassana/feedly-plasmoid'
+    
     property string mostPopularEngagement
     property string mostPopularTitle
     property string mostPopularUrl
@@ -25,8 +27,6 @@ Item {
     //Plasmoid.preferredRepresentation: Plasmoid.compactRepresentation
     Plasmoid.compactRepresentation: CompactRepresentation {}
     Plasmoid.fullRepresentation: FullRepresentation { }
-    //Plasmoid.switchWidth: units.gridUnit * 8
-    //Plasmoid.switchHeight: units.gridUnit * 8
     Plasmoid.title: 'Feedly Plasmoid'
     
     FontLoader {
