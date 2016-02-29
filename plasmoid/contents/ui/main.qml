@@ -13,7 +13,7 @@ Item {
     property int updateInterval: Plasmoid.configuration.updateInterval
     property int unreadsCount: 0
     
-    property string projectUrl: 'https://github.com/lassana/feedly-plasmoid'
+    property string projectUrl: FeedlyUtils.PROJECT_URL
     
     property string mostPopularEngagement
     property string mostPopularTitle

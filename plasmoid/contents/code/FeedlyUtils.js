@@ -1,25 +1,34 @@
 .pragma library
 
+var FEEDLY_URL = 'feedly.com/'
+var FEEDLY_API_URL = 'sandbox.feedly.com/'
+var FEEDLY_API_ENDPOINT = 'http://localhost'
+var FEEDLY_API_ENDPOINT_REGEX = /http:\/\/localhost\/\?code\=(.*?)&state\=/
+var FEEDLY_API_CLIENT_ID = 'sandbox'
+var FEEDLY_API_CLIENT_SECRET = 'JSSBD6FZT72058P51XEG'
+
+var PROJECT_URL = 'https://github.com/lassana/feedly-plasmoid'
+
 function protocol(useHttps) {
     return useHttps ? 'https://' : 'http://'
 }
 
 function feedlySiteUrl(useHttps) {
-     return protocol(useHttps) + 'feedly.com/'
+     return protocol(useHttps) + FEEDLY_URL
 }
 
 function feedlyBaseApiUrl(useHttps) {
-    return protocol(useHttps) + 'sandbox.feedly.com/'
+    return protocol(useHttps) + FEEDLY_API_URL
 }
 
 function feedlyRedirectUrl() {
-    return 'http://localhost'
+    return FEEDLY_API_ENDPOINT
 }
 
 function getHtmlAuth(useHttps, callback) {
     var url = feedlyBaseApiUrl(useHttps)
             + '/v3/auth/auth' 
-            + '?client_id=' + 'sandbox'
+            + '?client_id=' + FEEDLY_API_CLIENT_ID
             + '&redirect_uri=' + feedlyRedirectUrl()
             + '&response_type=' + 'code'
             + '&scope=' + 'https://cloud.feedly.com/subscriptions'
@@ -44,8 +53,8 @@ function getTokens(code, useHttps, callback) {
     var url = feedlyBaseApiUrl(useHttps)
                 + '/v3/auth/token'
                 + '?code=' + code
-                + '&client_id=' + 'sandbox'
-                + '&client_secret=' + 'JSSBD6FZT72058P51XEG'
+                + '&client_id=' + FEEDLY_API_CLIENT_ID
+                + '&client_secret=' + FEEDLY_API_CLIENT_SECRET
                 + '&redirect_uri=' + feedlyRedirectUrl()
                 + '&grant_type=' + 'authorization_code'
     var http = new XMLHttpRequest()
@@ -66,7 +75,7 @@ function getTokens(code, useHttps, callback) {
 
 function getMostPopular(token, useHttps, streamId, callback) {
     var mostPopular = null
-    var url = protocol(useHttps) + 'sandbox.feedly.com/v3/mixes/contents?streamId=' + streamId + '&unreadOnly=true&count=' + 5
+    var url = protocol(useHttps) + FEEDLY_API_URL + 'v3/mixes/contents?streamId=' + streamId + '&unreadOnly=true&count=' + 5
     var http = new XMLHttpRequest()
     http.onreadystatechange = function() {
         if (http.readyState == XMLHttpRequest.DONE) {
@@ -105,7 +114,7 @@ function getMostPopular(token, useHttps, streamId, callback) {
 function getUnreadCounts(token, useHttps, callback) {
     var newUnreadsCount = 0
     var mainStreamId = ''
-    var url = protocol(useHttps) + 'sandbox.feedly.com/v3/markers/counts'
+    var url = protocol(useHttps) + FEEDLY_API_URL + 'v3/markers/counts'
     var http = new XMLHttpRequest()
     var listener = function() {
         if (http.readyState == XMLHttpRequest.DONE) {

@@ -73,8 +73,7 @@ Item {
             experimental.preferences.privateBrowsingEnabled: true
             visible: false
             onNavigationRequested: {
-                console.log(request.url)
-                var array = /http:\/\/localhost\/\?code\=(.*?)&state\=/.exec(request.url)
+                var array = FeedlyUtils.FEEDLY_API_ENDPOINT_REGEX.exec(request.url)
                 if (array != null && array.length == 2) {
                     var code = array[1]
                     FeedlyUtils.getTokens(code, cfg_useHttps, function(argAccessToken, argRefreshToken, argExpiresIn) {
