@@ -73,6 +73,28 @@ function getTokens(code, useHttps, callback) {
     http.send('')
 }
 
+function updateTokens(useHttps, refreshToken, callback) {
+    var url = feedlyBaseApiUrl(useHttps)
+                + '/v3/auth/token'
+                + '?refresh_token=' + refreshToken
+                + '&client_id=' + FEEDLY_API_CLIENT_ID
+                + '&client_secret=' + FEEDLY_API_CLIENT_SECRET
+                + '&grant_type=' + 'refresh_token'
+                var http = new XMLHttpRequest()
+    http.onreadystatechange = function() {
+        if (http.readyState == XMLHttpRequest.DONE) {
+            //console.log('Status -->\n' + http.status)
+            //console.log('responseText -->\n' + http.responseText)
+            if (http.status == 200) {
+                var responseObject = JSON.parse(http.responseText)
+                callback(responseObject.access_token, responseObject.expires_in)
+            }
+        }
+    }
+    http.open('POST', url, true)
+    http.send('')
+}
+
 function getMostPopular(token, useHttps, streamId, callback) {
     var mostPopular = null
     var url = protocol(useHttps) + FEEDLY_API_URL + 'v3/mixes/contents?streamId=' + streamId + '&unreadOnly=true&count=' + 5

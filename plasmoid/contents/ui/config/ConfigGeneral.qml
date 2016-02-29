@@ -77,9 +77,12 @@ Item {
                 if (array != null && array.length == 2) {
                     var code = array[1]
                     FeedlyUtils.getTokens(code, cfg_useHttps, function(argAccessToken, argRefreshToken, argExpiresIn) {
+                        //console.log('argAccessToken  = ' + argAccessToken)
+                        //console.log('argRefreshToken = ' + argRefreshToken)
+                        //console.log('argExpiresIn    = ' + argExpiresIn)
                         plasmoid.configuration.accessToken = argAccessToken
                         plasmoid.configuration.refreshToken = argRefreshToken
-                        plasmoid.configuration.tokenExpires = Date.now() + argExpiresIn
+                        plasmoid.configuration.tokenExpires = (Date.now() + argExpiresIn)
                         webView.visible = false
                         loginButton.enabled = true
                     })

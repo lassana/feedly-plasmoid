@@ -9,7 +9,6 @@ Item {
     
     property bool vertical: (Plasmoid.formFactor == PlasmaCore.Types.Vertical)
     property bool useHttps: Plasmoid.configuration.useHttps
-    property string accessToken: Plasmoid.configuration.accessToken
     property int updateInterval: Plasmoid.configuration.updateInterval
     property int unreadsCount: 0
     
@@ -54,7 +53,7 @@ Item {
     }
     
     function updateUnreadCounts() {
-        var tkn = accessToken
+        var tkn = Plasmoid.configuration.accessToken
         FeedlyUtils.getUnreadCounts(tkn, useHttps, function(newUnreadsCount, mostPopular) {
             unreadsCount = newUnreadsCount
             mostPopularEngagement = mostPopular.engagement
@@ -63,6 +62,13 @@ Item {
             mostPopularImage = mostPopular.image
             mostPopularFrom = mostPopular.from
             mostPopularDate = mostPopular.date
+            if ( (Plasmoid.configuration.tokenExpires - Date.now()) < 7*24*60*60 ) {
+                //access token will be expired in seven days, so it's necessary to update it
+                FeedlyUtils.updateTokens(useHttps, Plasmoid.configuration.refreshToken, function(argAccessToken, argExpiresIn) {
+                    Plasmoid.configuration.accessToken = argAccessToken
+                    Plasmoid.configuration.tokenExpires = (Date.now() + argExpiresIn)
+                })
+            }
         })
     }
     
