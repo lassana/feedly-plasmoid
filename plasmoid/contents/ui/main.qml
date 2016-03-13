@@ -11,6 +11,7 @@ Item {
     property bool useHttps: Plasmoid.configuration.useHttps
     property int updateInterval: Plasmoid.configuration.updateInterval
     property int unreadsCount: 0
+    property bool inTray: (plasmoid.parent === null || plasmoid.parent.objectName === 'taskItemContainer')
     
     property string projectUrl: FeedlyUtils.PROJECT_URL
     
@@ -34,6 +35,7 @@ Item {
     
     Component.onCompleted: {
         updateTooltip()
+        console.log('inTray = ' + inTray)
         Plasmoid.setAction('reload', 'Refresh', 'view-refresh')
         Plasmoid.setAction('openFeedlyWebsite', 'Open Feedly', 'tag-places')
         updateUnreadCounts()
