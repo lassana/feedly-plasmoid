@@ -5,7 +5,7 @@ var FEEDLY_API_URL = 'sandbox.feedly.com/'
 var FEEDLY_API_ENDPOINT = 'http://localhost'
 var FEEDLY_API_ENDPOINT_REGEX = /http:\/\/localhost\/\?code\=(.*?)&state\=/
 var FEEDLY_API_CLIENT_ID = 'sandbox'
-var FEEDLY_API_CLIENT_SECRET = 'JSSBD6FZT72058P51XEG'
+var FEEDLY_API_CLIENT_SECRET = 'CS2CQZIFRB8ZVMH95ID0'
 
 var PROJECT_URL = 'https://github.com/lassana/feedly-plasmoid'
 
