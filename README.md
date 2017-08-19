@@ -1,6 +1,6 @@
 # feedly-plasmoid
 
-The little Plasma5 widget.
+A little Plasma5 widget.
 
 ![Screenshot][screenshot-src]
 
